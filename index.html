@@ -7,7 +7,7 @@
     <title>SN air</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=The+Girl+Next+Door&display=swap" rel="stylesheet">    
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Poppins:wght@400;500;600;700&family=The+Girl+Next+Door&display=swap" rel="stylesheet">    
     <style>
         :root {
             --united-header-dark: #012d8e;
@@ -181,7 +181,7 @@
             background-color: var(--sky-blue);
             background-image: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/plane.png');
             background-size: cover;
-            background-position: center center; 
+            background-position: top center;
             position: relative;
             overflow: hidden;
             min-height: 300px;
@@ -201,12 +201,21 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 55%;
+            height: 60%;
             z-index: 1;
             pointer-events: none;
             overflow: hidden;
             -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
             mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+        }
+
+        @keyframes drift {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(100px, 0, 0); }
+        }
+
+        .cloud {
+            will-change: transform;
         }
 
         .status-bar {
@@ -225,17 +234,21 @@
             letter-spacing: 0.5px;
         }
 
-        .grid-menu {
-            height: 35vh; 
-            min-height: 240px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 2px;
+        .mosaic-menu {
+            height: 38vh; 
+            min-height: 250px;
+            display: flex;
+            flex-direction: row;
             background-color: white;
             z-index: 5;
             position: relative;
             padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .menu-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .grid-item {
@@ -246,46 +259,43 @@
             color: white;
             cursor: pointer;
             position: relative;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             transition: opacity 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .grid-item:active {
-            opacity: 0.8;
-        }
+        .grid-item:active { opacity: 0.8; }
 
         .icon-circle {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgb(255, 255, 255);
+            width: 55px;
+            height: 55px;
+            border: 5px solid rgb(255, 255, 255);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .icon-circle img {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             filter: brightness(0) invert(1);
         }
         
-        .book-flight-icon {
-            transform: rotate(-45deg) scale(1.4);
-        }
+        .book-flight-icon { transform: rotate(-45deg) scale(1.4); }
 
         .flight-status > img,
         .check-in > img {
-            width: 55px;
-            height: 55px;
-            margin-bottom: 12px;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
             filter: brightness(0) invert(1);
         }
 
         .grid-item span {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             letter-spacing: 0.3px;
         }
@@ -294,22 +304,21 @@
         .airport-maps { background-color: var(--tile-grey-blue); }
         .book-flight { background-color: var(--tile-light-blue); }
         .check-in { background-color: var(--tile-vivid-blue); }
-        
+
         #maps-overlay {
             position: fixed;
             inset: 0;
             height: 100dvh;
             width: 100vw;
             z-index: 9999;
-            background: radial-gradient(circle at center, #64A6E3 0%, #003695 100%);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease;
+            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/picnic.jpg') repeat;
+            background-size: 200px;
+            display: none; 
             overflow: hidden;
         }
 
         #maps-overlay.active {
-            opacity: 1;
+            display: block;
             pointer-events: auto;
         }
 
@@ -317,42 +326,15 @@
             width: 100%;
             height: 100%;
             position: relative;
-            filter: blur(20px);
-            transform: scale(1.1);
-            transition: filter 0.6s ease, transform 0.6s ease;
-        }
-
-        #maps-overlay.active .blur-content {
-            filter: blur(0px);
-            transform: scale(1);
         }
 
         .noise {
             position: absolute;
             inset: 0;
             z-index: 1;
-            opacity: 0.05;
+            opacity: 0.15;
             pointer-events: none;
             background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/noise.jpg');
-        }
-
-        .overlay-cloud-layer {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .cloud {
-            position: absolute;
-            z-index: 2;
-        }
-
-        @keyframes drift {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(20px); }
-            100% { transform: translateX(0); }
         }
 
         .maps-scroll-area {
@@ -361,7 +343,6 @@
             flex: 1;
             height: 100%;
             overflow-y: auto;
-            /* Adjust padding for safe areas inside the overlay */
             padding-top: calc(80px + env(safe-area-inset-top));
             padding-bottom: calc(50px + env(safe-area-inset-bottom));
             display: flex;
@@ -370,54 +351,49 @@
             scrollbar-width: none; 
             -ms-overflow-style: none;
         }
-        .maps-scroll-area::-webkit-scrollbar { 
-            display: none; 
-        }
+        .maps-scroll-area::-webkit-scrollbar { display: none; }
 
         .polaroid {
             position: relative;
-            background-color: rgb(212, 212, 212);
-            padding: 12px 12px 60px 12px; 
-            width: 280px; 
+            background-color: white;
+            padding: 15px 15px 60px 15px; 
+            width: 300px; 
+            height: auto; 
             margin-bottom: 50px; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
         }
 
         .polaroid img {
-            width: 100%;
-            height: auto;
+            width: 100%; 
+            height: auto; 
             display: block;
-            object-fit: contain;
             background-color: #f8f8f8;
         }
 
         .polaroid-caption {
             position: absolute;
             bottom: 0;
-            left: 12px; 
-            right: 12px; 
+            left: 15px; 
+            right: 15px; 
             height: 60px; 
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: left;
+            text-align: center;
             font-family: "Patrick Hand", cursive;
             color: #030303; 
+            font-size: 24px;
             line-height: 1.1;
-            overflow: hidden; 
-            padding: 2px 5px; 
         }
 
         .back-btn {
             position: absolute;
-            /* Push button down below notch/dynamic island */
             top: calc(20px + env(safe-area-inset-top));
             left: 20px;
-            z-index: 999;
+            z-index: 10002;
             cursor: pointer;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.4);
             backdrop-filter: blur(5px);
             border-radius: 50%;
             width: 44px;
@@ -436,6 +412,107 @@
             stroke-width: 2.5;
         }
 
+        #status-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            background: black;
+            display: none;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #status-overlay.active { display: block; opacity: 1; }
+
+        .status-map-bg {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            transform: scale(1);
+            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/map.jpg') center/cover no-repeat;
+            filter: blur(1px) brightness(0.5);
+            z-index: 1;
+        }
+
+        .status-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .gradient-blur-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            z-index: 4;
+            pointer-events: none;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
+        }
+
+        .status-scroll-container {
+            position: relative;
+            z-index: 3;
+            height: 100%;
+            overflow-y: scroll;
+            scrollbar-width: none;
+        }
+        .status-scroll-container::-webkit-scrollbar { display: none; }
+
+        .svg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #dashed-path {
+            fill: none;
+            stroke: rgb(255, 255, 255);
+            stroke-width: 3;
+            stroke-dasharray: 12, 12;
+            stroke-dashoffset: 0;
+            stroke-linecap: round;
+        }
+
+        .quote-block {
+            min-height: 200px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 30px;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote-main { 
+            font-size: 26px; 
+            font-weight: 700; 
+            line-height: 1.3; 
+            display: block; 
+            text-align: left; 
+            max-width: 100%; 
+            margin: 0;
+        }
+
+        .quote-main span {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -443,16 +520,13 @@
     <div class="app-container">
         <header>
             <div class="header-bg"></div>
-
             <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
             </div>
             <div class="logo">S+N</div>
             <div class="notifications-wrapper">
                 <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/notification.svg" class="notif-icon" alt="Notifications">
-                <div class="badge">8</div>
+                <div class="badge">18</div>
             </div>
         </header>
 
@@ -471,29 +545,31 @@
             <h2 class="welcome-text">Welcome back, Sahar</h2>
         </div>
 
-        <div class="grid-menu">
-            <div class="grid-item flight-status">
-                <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/clock.svg" alt="Flight Status">
-                <span>Flight status</span>
-            </div>
-
-            <div class="grid-item airport-maps" id="maps-trigger">
-                <div class="icon-circle">
-                    <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/originMarker.svg" alt="Airport Maps">
+        <div class="mosaic-menu">
+            <div class="menu-col">
+                <div class="grid-item flight-status" id="flight-status-trigger" style="flex: 4;">
+                    <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/clock.svg" alt="Flight Status">
+                    <span>Flight status</span>
                 </div>
-                <span>Airport maps</span>
-            </div>
-
-            <div class="grid-item book-flight">
-                <div class="icon-circle">
-                    <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/plane.svg" class="book-flight-icon" alt="Book a flight">
+                <div class="grid-item book-flight" style="flex: 6;">
+                    <div class="icon-circle">
+                        <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/plane.svg" class="book-flight-icon" alt="Book a flight">
+                    </div>
+                    <span>Book a flight</span>
                 </div>
-                <span>Book a flight</span>
             </div>
 
-            <div class="grid-item check-in">
-                <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/check-circle.svg" alt="Check-in">
-                <span>Check-in</span>
+            <div class="menu-col">
+                <div class="grid-item airport-maps" id="maps-trigger" style="flex: 6;">
+                    <div class="icon-circle">
+                        <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/originMarker.svg" alt="Airport Maps">
+                    </div>
+                    <span>Airport maps</span>
+                </div>
+                <div class="grid-item check-in" style="flex: 4;">
+                    <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/check-circle.svg" alt="Check-in">
+                    <span>Check-in</span>
+                </div>
             </div>
         </div>
     </div>
@@ -501,20 +577,47 @@
     <div id="maps-overlay">
         <div class="blur-content">
             <div class="noise"></div>
-            <div class="overlay-cloud-layer" id="overlay-cloud-container"></div>
-            
             <div class="back-btn" id="close-maps">
                 <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
             </div>
+            <div class="maps-scroll-area" id="polaroid-feed"></div>
+        </div>
+    </div>
 
-            <div class="maps-scroll-area" id="polaroid-feed">
-            </div>
+    <div id="status-overlay">
+        <div class="status-map-bg"></div>
+        <div class="status-vignette"></div>
+        <div class="gradient-blur-bottom"></div>
+        
+        <div class="back-btn" id="close-status">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        
+        <div class="status-scroll-container" id="status-scroller">
+            <svg class="svg-container" id="status-svg">
+                <path id="dashed-path" d="" />
+            </svg>
+            <div id="status-quotes-container"></div>
+            <div style="height: 400px;"></div> 
         </div>
     </div>
 
     <script>
+        const QUOTES_DATA = [
+            "Over 16,000 miles flown,",
+            "just to be with you",
+            "every moment special",
+            "when we are together",
+            "across the world",
+            "to hold your hand",
+            "no distance is too far",
+            "if it means being with you in the end"
+        ];
+
         const GALLERY_DATA = [
             { url: "https://picsum.photos/seed/pic2/1000/800", caption: "Salem 2023" },
+            { url: "https://picsum.photos/seed/pic1/1000/800", caption: "Adventures" },
+            { url: "https://picsum.photos/seed/pic3/1000/800", caption: "Flying High" },
         ];
 
         const CLOUD_ASSETS = [
@@ -526,92 +629,134 @@
         const mapsTrigger = document.getElementById('maps-trigger');
         const mapsOverlay = document.getElementById('maps-overlay');
         const closeMaps = document.getElementById('close-maps');
-        
-        const overlayCloudContainer = document.getElementById('overlay-cloud-container');
-        const heroCloudContainer = document.getElementById('hero-cloud-container');
-        
-        const polaroidFeed = document.getElementById('polaroid-feed');
+        const statusTrigger = document.getElementById('flight-status-trigger');
+        const statusOverlay = document.getElementById('status-overlay');
+        const closeStatus = document.getElementById('close-status');
+        const statusScroller = document.getElementById('status-scroller');
+        const quotesContainer = document.getElementById('status-quotes-container');
+        const dashedPath = document.getElementById('dashed-path');
+        const statusSvg = document.getElementById('status-svg');
 
         function spawnClouds(container, count, opacityBase = 0.6) {
             container.innerHTML = ''; 
-
             for (let i = 0; i < count; i++) {
                 const img = document.createElement('img');
-                const randomCloud = CLOUD_ASSETS[Math.floor(Math.random() * CLOUD_ASSETS.length)];
-                img.src = randomCloud;
+                img.src = CLOUD_ASSETS[Math.floor(Math.random() * CLOUD_ASSETS.length)];
                 img.classList.add('cloud');
-
+                img.style.position = 'absolute';
+                
                 const top = Math.random() * 80; 
-                const left = Math.random() * 80 - 10; 
+                const left = Math.random() * 90 - 15; 
                 const width = Math.random() * 300 + 300; 
                 const opacity = Math.random() * 0.3 + opacityBase; 
-                const rotation = Math.random() * 30 - 15;
-                const mirror = Math.random() > 0.5 ? -1 : 1;
-                const animDuration = Math.random() * 20 + 30; 
+                const animDuration = Math.random() * 30 + 40; 
                 
                 img.style.top = `${top}%`;
                 img.style.left = `${left}%`;
                 img.style.width = `${width}px`;
                 img.style.opacity = opacity;
-                img.style.transform = `rotate(${rotation}deg) scaleX(${mirror})`;
-                img.style.animation = `drift ${animDuration}s ease-in-out infinite alternate`;
-
+                img.style.animation = `drift ${animDuration}s linear infinite alternate`;
                 container.appendChild(img);
             }
         }
 
         function generatePolaroids() {
-            polaroidFeed.innerHTML = ''; 
-
+            const feed = document.getElementById('polaroid-feed');
+            feed.innerHTML = ''; 
             GALLERY_DATA.forEach((data, index) => {
                 const polaroid = document.createElement('div');
                 polaroid.classList.add('polaroid');
+                const rot = Math.random() * 6 - 3;
+                polaroid.style.transform = `rotate(${rot}deg)`;
                 
-                const rot = Math.random() * 10 - 5;
-                const xOffset = Math.random() * 30 - 15; 
+                polaroid.innerHTML = `
+                    <img src="${data.url}" loading="lazy">
+                    <div class="polaroid-caption">${data.caption}</div>
+                `;
+                feed.appendChild(polaroid);
+            });
+        }
+
+        function initFlightStatus() {
+            quotesContainer.innerHTML = '';
+            
+            QUOTES_DATA.forEach((text, i) => {
+                const block = document.createElement('div');
+                block.className = 'quote-block';
+                const isLeft = i % 2 === 0;
+                block.style.alignItems = isLeft ? 'flex-start' : 'flex-end';
+                block.style.textAlign = 'left'; 
                 
-                polaroid.style.transform = `rotate(${rot}deg) translateX(${xOffset}px)`;
-                polaroid.style.zIndex = index + 10; 
+                block.innerHTML = `<div class="quote-main" style="margin-${isLeft?'left':'right'}: 10px"><span>${text}</span></div>`;
+                quotesContainer.appendChild(block);
+            });
 
-                const captionText = data.caption;
-                let fontSizeStr = "14px"; 
+            setTimeout(() => {
+                const blocks = Array.from(quotesContainer.querySelectorAll('.quote-main span'));
+                const containerRect = statusScroller.getBoundingClientRect();
+                const totalHeight = statusScroller.scrollHeight;
+                
+                statusSvg.style.height = totalHeight + 'px';
 
-                const len = captionText.length;
-                if (len < 15) {
-                    fontSizeStr = "28px"; 
-                } else if (len < 35) {
-                    fontSizeStr = "20px"; 
-                } else if (len < 70) {
-                    fontSizeStr = "16px"; 
+                let pathD = "";
+
+                for (let i = 0; i < blocks.length - 1; i += 2) {
+                    const startEl = blocks[i];     
+                    const endEl = blocks[i+1];     
+
+                    const startRect = startEl.getBoundingClientRect();
+                    const endRect = endEl.getBoundingClientRect();
+
+                    const startX = startRect.right - containerRect.left + 8;
+                    const startY = startRect.top - containerRect.top + statusScroller.scrollTop + (startRect.height / 2);
+
+                    const endX = endRect.left - containerRect.left - 8;
+                    const endY = endRect.top - containerRect.top + statusScroller.scrollTop + (endRect.height / 2);
+
+                    pathD += `M ${startX} ${startY} `;
+
+                    const distY = endY - startY;
+                    const swingX = 100 + Math.random() * 20; 
+                    const tension = 0.1 + Math.random() * 1.4; 
+
+                    const cp1X = startX + swingX; 
+                    const cp1Y = startY + (distY * tension);
+                    const cp2X = endX - swingX;
+                    const cp2Y = endY - (distY * tension);
+
+                    pathD += `C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY} `;
                 }
 
-                polaroid.innerHTML = `
-                    <img src="${data.url}" loading="lazy" alt="${captionText}">
-                    <div class="polaroid-caption" style="font-size: ${fontSizeStr};">
-                        ${captionText}
-                    </div>
-                `;
-
-                polaroidFeed.appendChild(polaroid);
-            });
-            
-            const padding = document.createElement('div');
-            padding.style.height = "100px";
-            polaroidFeed.appendChild(padding);
+                dashedPath.setAttribute('d', pathD);
+            }, 50);
         }
 
         mapsTrigger.addEventListener('click', () => {
-            spawnClouds(overlayCloudContainer, 6, 0.6);
             generatePolaroids(); 
             mapsOverlay.classList.add('active');
         });
 
-        closeMaps.addEventListener('click', () => {
-            mapsOverlay.classList.remove('active');
+        closeMaps.addEventListener('click', () => mapsOverlay.classList.remove('active'));
+
+        statusTrigger.addEventListener('click', () => {
+            initFlightStatus();
+            statusOverlay.classList.add('active');
+        });
+
+        closeStatus.addEventListener('click', () => statusOverlay.classList.remove('active'));
+
+        statusScroller.addEventListener('scroll', () => {
+            dashedPath.style.strokeDashoffset = -statusScroller.scrollTop * 0.5;
+        });
+
+        window.addEventListener('resize', () => {
+            if(statusOverlay.classList.contains('active')) {
+                initFlightStatus();
+            }
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            spawnClouds(heroCloudContainer, 5, 0.5);
+            spawnClouds(document.getElementById('hero-cloud-container'), 5, 0.5);
         });
     </script>
 </body>
