@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="darkreader-lock">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SN air</title>
+    <title>s+n</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Poppins:wght@400;500;600;700&family=The+Girl+Next+Door&display=swap" rel="stylesheet">    
@@ -109,7 +109,7 @@
         .logo {
             font-weight: 650;
             font-size: 30px;
-            letter-spacing: -3px;
+            letter-spacing: -1px;
             color: white;
         }
 
@@ -178,22 +178,13 @@
 
         .hero {
             flex-grow: 1;
-            background-color: var(--sky-blue);
-            background-image: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/plane.png');
-            background-size: cover;
-            background-position: top center;
+            background: linear-gradient(to bottom, #3E72A2 0%, #7db9e8 100%);
             position: relative;
             overflow: hidden;
             min-height: 300px;
-        }
-        
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0,0,0,0) 40%);
-            z-index: 3;
-            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .hero-clouds-container {
@@ -201,21 +192,40 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 60%;
+            height: 70%;
             z-index: 1;
-            pointer-events: none;
             overflow: hidden;
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
-        }
-
-        @keyframes drift {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(100px, 0, 0); }
+            perspective: 1000px;
+            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
         }
 
         .cloud {
+            position: absolute;
+            left: -100%;
+            transform: translate3d(0, 0, 0);
             will-change: transform;
+            filter: blur(0.6px); 
+            image-rendering: -webkit-optimize-contrast;
+            backface-visibility: hidden;
+        }
+
+        @keyframes drift {
+            from { transform: translate3d(-20vw, 0, 0); }
+            to { transform: translate3d(120vw, 0, 0); }
+        }
+
+        .hero-plane {
+            position: relative;
+            z-index: 2;
+            width: 80%;
+            max-width: 450px;
+            transform: translateY(60px); 
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
         }
 
         .status-bar {
@@ -307,12 +317,15 @@
 
         #maps-overlay {
             position: fixed;
-            inset: 0;
-            height: 100dvh;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             width: 100vw;
+            height: 100dvh;
             z-index: 9999;
-            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/picnic.jpg') repeat;
-            background-size: 200px;
+            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/picnic.jpg') center center;
+            background-size: cover; 
             display: none; 
             overflow: hidden;
         }
@@ -330,7 +343,10 @@
 
         .noise {
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             opacity: 0.15;
             pointer-events: none;
@@ -414,7 +430,12 @@
 
         #status-overlay {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100dvh;
             z-index: 10001;
             background: black;
             display: none;
@@ -426,16 +447,14 @@
 
         .status-map-bg {
             position: absolute;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             top: 0;
             left: 0;
-            transform: scale(1);
-            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/map.jpg') center/cover no-repeat;
+            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/map.jpg') center center / cover no-repeat;
             filter: blur(1px) brightness(0.5);
             z-index: 1;
         }
-
         .status-vignette {
             position: absolute;
             inset: 0;
@@ -512,7 +531,6 @@
             padding: 5px 10px;
             border-radius: 4px;
         }
-
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -523,7 +541,7 @@
             <div class="hamburger">
                 <span></span><span></span><span></span>
             </div>
-            <div class="logo">S+N</div>
+            <div class="logo">s+n airlines</div>
             <div class="notifications-wrapper">
                 <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/notification.svg" class="notif-icon" alt="Notifications">
                 <div class="badge">18</div>
@@ -539,6 +557,7 @@
 
         <div class="hero">
             <div class="hero-clouds-container" id="hero-cloud-container"></div>
+            <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/airplane.png" class="hero-plane" alt="S+N Air">
         </div>
 
         <div class="status-bar">
@@ -637,28 +656,35 @@
         const dashedPath = document.getElementById('dashed-path');
         const statusSvg = document.getElementById('status-svg');
 
-        function spawnClouds(container, count, opacityBase = 0.6) {
+        function spawnClouds(container, count) {
             container.innerHTML = ''; 
             for (let i = 0; i < count; i++) {
                 const img = document.createElement('img');
-                img.src = CLOUD_ASSETS[Math.floor(Math.random() * CLOUD_ASSETS.length)];
+                img.src = CLOUD_ASSETS[i % CLOUD_ASSETS.length];
                 img.classList.add('cloud');
-                img.style.position = 'absolute';
                 
-                const top = Math.random() * 80; 
-                const left = Math.random() * 90 - 15; 
-                const width = Math.random() * 300 + 300; 
-                const opacity = Math.random() * 0.3 + opacityBase; 
-                const animDuration = Math.random() * 30 + 40; 
+                const depth = Math.random() * 0.9 + 0.1; 
+                const duration = 500 - (depth * 250); 
                 
-                img.style.top = `${top}%`;
-                img.style.left = `${left}%`;
+                const width = 300 + (depth * 400); 
+                const opacity = 0.4 + (depth * 0.4); 
+                const top = Math.random() * 60; 
+                const delay = Math.random() * -duration; 
+
                 img.style.width = `${width}px`;
+                img.style.top = `${top}%`;
                 img.style.opacity = opacity;
-                img.style.animation = `drift ${animDuration}s linear infinite alternate`;
+                img.style.transform = 'translate3d(0,0,0)';
+                img.style.animation = `drift ${duration}s linear infinite`;
+                img.style.animationDelay = `${delay}s`;
+                
                 container.appendChild(img);
             }
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            spawnClouds(document.getElementById('hero-cloud-container'), 20);
+        });
 
         function generatePolaroids() {
             const feed = document.getElementById('polaroid-feed');
