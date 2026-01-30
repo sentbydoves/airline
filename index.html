@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="darkreader-lock">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SN air</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,8 +37,8 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #000;
-            height: 100vh;
+            background-color: var(--united-header-dark); 
+            height: 100dvh; 
             width: 100vw;
             overflow: hidden;
         }
@@ -54,11 +54,13 @@
         }
 
         header {
-            height: 60px;
+            height: calc(60px + env(safe-area-inset-top));
+            padding-top: env(safe-area-inset-top);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
+            padding-left: 20px;
+            padding-right: 20px;
             color: white;
             position: relative;
             z-index: 10;
@@ -152,7 +154,7 @@
             justify-content: space-around;
             align-items: center;
             position: absolute;
-            top: 60px;
+            top: calc(60px + env(safe-area-inset-top));
             width: 100%;
             z-index: 5;
             padding: 0 10px;
@@ -179,9 +181,10 @@
             background-color: var(--sky-blue);
             background-image: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/airplane.png');
             background-size: cover;
-            background-position: center 35%; 
+            background-position: center center; 
             position: relative;
             overflow: hidden;
+            min-height: 300px;
         }
         
         .hero::after {
@@ -232,6 +235,7 @@
             background-color: white;
             z-index: 5;
             position: relative;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .grid-item {
@@ -293,11 +297,10 @@
         
         #maps-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
+            height: 100dvh;
             width: 100vw;
-            height: 100vh;
-            z-index: 100;
+            z-index: 9999;
             background: radial-gradient(circle at center, #64A6E3 0%, #003695 100%);
             opacity: 0;
             pointer-events: none;
@@ -358,8 +361,9 @@
             flex: 1;
             height: 100%;
             overflow-y: auto;
-            padding-top: 80px;
-            padding-bottom: 50px;
+            /* Adjust padding for safe areas inside the overlay */
+            padding-top: calc(80px + env(safe-area-inset-top));
+            padding-bottom: calc(50px + env(safe-area-inset-bottom));
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -408,7 +412,8 @@
 
         .back-btn {
             position: absolute;
-            top: 20px;
+            /* Push button down below notch/dynamic island */
+            top: calc(20px + env(safe-area-inset-top));
             left: 20px;
             z-index: 999;
             cursor: pointer;
