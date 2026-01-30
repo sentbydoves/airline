@@ -1,1 +1,612 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SN air</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=The+Girl+Next+Door&display=swap" rel="stylesheet">    
+    <style>
+        :root {
+            --united-header-dark: #012d8e;
+            --united-header-light: #00224F;
+            --united-gold: #ECA827;
+            --tile-dark-blue: #021836;
+            --tile-grey-blue: #647D91;
+            --tile-light-blue: #64A6E3;
+            --tile-vivid-blue: #003695;
+            --sky-blue: #3E72A2;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            background-color: var(--sky-blue);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        header {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            background-color: var(--united-header-dark);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .header-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -20%;
+            width: 100%;
+            background: radial-gradient(circle at 40% 120%, #1c5e9f 0%, #002d6b 60%, #001538 100%);
+            transform: skewX(-35deg);
+            transform-origin: top left;
+            box-shadow: 8px 0 15px rgba(0, 0, 0, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            padding: 10px 0;
+        }
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+        .logo {
+            font-weight: 650;
+            font-size: 30px;
+            letter-spacing: -3px;
+            color: white;
+        }
+
+        .notifications-wrapper {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .notif-icon {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) invert(1);
+        }
+
+        .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background-color: #5C9FDF;
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            border: 2px solid #001844; 
+            z-index: 2;
+        }
+
+        .top-nav {
+            background-color: transparent;
+            height: 70px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: absolute;
+            top: 60px;
+            width: 100%;
+            z-index: 5;
+            padding: 0 10px;
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            filter: brightness(0) invert(1);
+        }
+        
+        .qr-icon-img {
+            width: 32px;
+            height: 32px;
+            filter: brightness(0) invert(1);
+        }
+        
+        .nav-plane { 
+            transform: rotate(-45deg) scale(1.4); 
+        }
+
+        .hero {
+            flex-grow: 1;
+            background-color: var(--sky-blue);
+            background-image: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/airplane.png');
+            background-size: cover;
+            background-position: center 35%; 
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0,0,0,0) 40%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .hero-clouds-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+        }
+
+        .status-bar {
+            background-color: var(--united-gold);
+            padding: 18px 20px;
+            color: #222;
+            z-index: 5;
+            position: relative;
+        }
+
+        .welcome-text {
+            font-size: 26px;
+            font-weight: 600;
+            margin: 0;
+            color: #000000;
+            letter-spacing: 0.5px;
+        }
+
+        .grid-menu {
+            height: 35vh; 
+            min-height: 240px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            background-color: white;
+            z-index: 5;
+            position: relative;
+        }
+
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            padding: 20px;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .grid-item:active {
+            opacity: 0.8;
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgb(255, 255, 255);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .icon-circle img {
+            width: 30px;
+            height: 30px;
+            filter: brightness(0) invert(1);
+        }
+        
+        .book-flight-icon {
+            transform: rotate(-45deg) scale(1.4);
+        }
+
+        .flight-status > img,
+        .check-in > img {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 12px;
+            filter: brightness(0) invert(1);
+        }
+
+        .grid-item span {
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .flight-status { background-color: var(--tile-dark-blue); }
+        .airport-maps { background-color: var(--tile-grey-blue); }
+        .book-flight { background-color: var(--tile-light-blue); }
+        .check-in { background-color: var(--tile-vivid-blue); }
+        
+        #maps-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+            background: radial-gradient(circle at center, #64A6E3 0%, #003695 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            overflow: hidden;
+        }
+
+        #maps-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .blur-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            filter: blur(20px);
+            transform: scale(1.1);
+            transition: filter 0.6s ease, transform 0.6s ease;
+        }
+
+        #maps-overlay.active .blur-content {
+            filter: blur(0px);
+            transform: scale(1);
+        }
+
+        .noise {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            opacity: 0.05;
+            pointer-events: none;
+            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/noise.jpg');
+        }
+
+        .overlay-cloud-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .cloud {
+            position: absolute;
+            z-index: 2;
+        }
+
+        @keyframes drift {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+            100% { transform: translateX(0); }
+        }
+
+        .maps-scroll-area {
+            position: relative;
+            z-index: 5;
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding-top: 80px;
+            padding-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        .maps-scroll-area::-webkit-scrollbar { 
+            display: none; 
+        }
+
+        .polaroid {
+            position: relative;
+            background-color: rgb(212, 212, 212);
+            padding: 12px 12px 60px 12px; 
+            width: 280px; 
+            margin-bottom: 50px; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            background-color: #f8f8f8;
+        }
+
+        .polaroid-caption {
+            position: absolute;
+            bottom: 0;
+            left: 12px; 
+            right: 12px; 
+            height: 60px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: left;
+            font-family: "Patrick Hand", cursive;
+            color: #030303; 
+            line-height: 1.1;
+            overflow: hidden; 
+            padding: 2px 5px; 
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            cursor: pointer;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.3);
+            pointer-events: auto; 
+        }
+        
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #fff;
+            stroke-width: 2.5;
+        }
+
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="app-container">
+        <header>
+            <div class="header-bg"></div>
+
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">S+N</div>
+            <div class="notifications-wrapper">
+                <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/notification.svg" class="notif-icon" alt="Notifications">
+                <div class="badge">8</div>
+            </div>
+        </header>
+
+        <div class="top-nav">
+            <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/qr-code.svg" class="qr-icon-img" alt="QR Code">
+            <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/baggage.svg" class="nav-icon" alt="Baggage">
+            <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/clock.svg" class="nav-icon" alt="Clock">
+            <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/plane.svg" class="nav-icon nav-plane" alt="Plane">
+        </div>
+
+        <div class="hero">
+            <div class="hero-clouds-container" id="hero-cloud-container"></div>
+        </div>
+
+        <div class="status-bar">
+            <h2 class="welcome-text">Welcome back, Sahar</h2>
+        </div>
+
+        <div class="grid-menu">
+            <div class="grid-item flight-status">
+                <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/clock.svg" alt="Flight Status">
+                <span>Flight status</span>
+            </div>
+
+            <div class="grid-item airport-maps" id="maps-trigger">
+                <div class="icon-circle">
+                    <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/originMarker.svg" alt="Airport Maps">
+                </div>
+                <span>Airport maps</span>
+            </div>
+
+            <div class="grid-item book-flight">
+                <div class="icon-circle">
+                    <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/plane.svg" class="book-flight-icon" alt="Book a flight">
+                </div>
+                <span>Book a flight</span>
+            </div>
+
+            <div class="grid-item check-in">
+                <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/check-circle.svg" alt="Check-in">
+                <span>Check-in</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="maps-overlay">
+        <div class="blur-content">
+            <div class="noise"></div>
+            <div class="overlay-cloud-layer" id="overlay-cloud-container"></div>
+            
+            <div class="back-btn" id="close-maps">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </div>
+
+            <div class="maps-scroll-area" id="polaroid-feed">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GALLERY_DATA = [
+            { url: "https://picsum.photos/seed/pic2/1000/800", caption: "Salem 2023" },
+        ];
+
+        const CLOUD_ASSETS = [
+            "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/cloud%201.png",
+            "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/cloud%202.png",
+            "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/cloud%203.png"
+        ];
+
+        const mapsTrigger = document.getElementById('maps-trigger');
+        const mapsOverlay = document.getElementById('maps-overlay');
+        const closeMaps = document.getElementById('close-maps');
+        
+        const overlayCloudContainer = document.getElementById('overlay-cloud-container');
+        const heroCloudContainer = document.getElementById('hero-cloud-container');
+        
+        const polaroidFeed = document.getElementById('polaroid-feed');
+
+        function spawnClouds(container, count, opacityBase = 0.6) {
+            container.innerHTML = ''; 
+
+            for (let i = 0; i < count; i++) {
+                const img = document.createElement('img');
+                const randomCloud = CLOUD_ASSETS[Math.floor(Math.random() * CLOUD_ASSETS.length)];
+                img.src = randomCloud;
+                img.classList.add('cloud');
+
+                const top = Math.random() * 80; 
+                const left = Math.random() * 80 - 10; 
+                const width = Math.random() * 300 + 300; 
+                const opacity = Math.random() * 0.3 + opacityBase; 
+                const rotation = Math.random() * 30 - 15;
+                const mirror = Math.random() > 0.5 ? -1 : 1;
+                const animDuration = Math.random() * 20 + 30; 
+                
+                img.style.top = `${top}%`;
+                img.style.left = `${left}%`;
+                img.style.width = `${width}px`;
+                img.style.opacity = opacity;
+                img.style.transform = `rotate(${rotation}deg) scaleX(${mirror})`;
+                img.style.animation = `drift ${animDuration}s ease-in-out infinite alternate`;
+
+                container.appendChild(img);
+            }
+        }
+
+        function generatePolaroids() {
+            polaroidFeed.innerHTML = ''; 
+
+            GALLERY_DATA.forEach((data, index) => {
+                const polaroid = document.createElement('div');
+                polaroid.classList.add('polaroid');
+                
+                const rot = Math.random() * 10 - 5;
+                const xOffset = Math.random() * 30 - 15; 
+                
+                polaroid.style.transform = `rotate(${rot}deg) translateX(${xOffset}px)`;
+                polaroid.style.zIndex = index + 10; 
+
+                const captionText = data.caption;
+                let fontSizeStr = "14px"; 
+
+                const len = captionText.length;
+                if (len < 15) {
+                    fontSizeStr = "28px"; 
+                } else if (len < 35) {
+                    fontSizeStr = "20px"; 
+                } else if (len < 70) {
+                    fontSizeStr = "16px"; 
+                }
+
+                polaroid.innerHTML = `
+                    <img src="${data.url}" loading="lazy" alt="${captionText}">
+                    <div class="polaroid-caption" style="font-size: ${fontSizeStr};">
+                        ${captionText}
+                    </div>
+                `;
+
+                polaroidFeed.appendChild(polaroid);
+            });
+            
+            const padding = document.createElement('div');
+            padding.style.height = "100px";
+            polaroidFeed.appendChild(padding);
+        }
+
+        mapsTrigger.addEventListener('click', () => {
+            spawnClouds(overlayCloudContainer, 6, 0.6);
+            generatePolaroids(); 
+            mapsOverlay.classList.add('active');
+        });
+
+        closeMaps.addEventListener('click', () => {
+            mapsOverlay.classList.remove('active');
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            spawnClouds(heroCloudContainer, 5, 0.5);
+        });
+    </script>
+</body>
+</html>
