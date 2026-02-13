@@ -538,9 +538,29 @@
             font-size: 26px; 
             font-weight: 700; 
             line-height: 1.3; 
-            opacity: 1; /* Changed from opacity transition to always visible */
+            transition: opacity 0.8s ease;
+            opacity: 0.1;
             color: white;
             z-index: 1;
+        }
+
+        .quote-main span.playing {
+            opacity: 1;
+        }
+
+        .quote-main span.playing::after {
+            content: attr(data-text); 
+            position: absolute;
+            display: inline-block;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            color: transparent; 
+            text-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8);
+            filter: url(#noiseFilter);
+            pointer-events: none;
         }
 
         #book-overlay {
@@ -666,7 +686,6 @@
             letter-spacing: 4px; font-weight: bold; opacity: 0.8;
         }
 
-        /* NEW VIDEO OVERLAY STYLES */
         #check-in-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -703,6 +722,12 @@
     </style>
 </head>
 <body oncontextmenu="return false;">
+<svg style="position: absolute; width: 0; height: 0;">
+  <filter id="noiseFilter" x="-50%" y="-50%" width="200%" height="200%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="4" stitchTiles="stitch" />
+    <feDisplacementMap in="SourceGraphic" scale="5" />
+  </filter>
+</svg>
     <div class="app-container">
         <header>
             <div class="header-bg"></div>
@@ -831,32 +856,48 @@
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
         </div>
-<div class="video-wrapper">
-   <div style="height: 0px; overflow: hidden; padding-top: 56.25%; position: relative; width: 100%;">
-        <iframe
-            id="check-in-iframe"
-            style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;"
-            src="https://tube.rvere.com/embed?v=b32xgIy8tMU&fs=0"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen>
-        </iframe>
+        <div class="video-wrapper">
+            <div style="height: 0px; overflow: hidden; padding-top: 56.25%; position: relative; width: 100%;">
+                <iframe
+                    id="check-in-iframe"
+                    style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;"
+                    src="https://tube.rvere.com/embed?v=b32xgIy8tMU&fs=0"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen>
+                </iframe>
+            </div>
+        </div>
     </div>
 
     <script>
-        const FLIGHT_TEXT = [
-            "16,000 miles,",
-            "just to see you smile",
-            "id wait forever",
-            "if im with you.",
-            "when we are together",
-            "across the world",
-            "ill hold your hand forever",
+        const AUDIO_SRC = "https://github.com/sentbydoves/airline/raw/refs/heads/main/audio/smile.mp3";
+        
+        const LYRIC_DATA = [
+            { text: "16,000 miles,", time: "00:06" },
+            { text: "just to see you smile", time: "00:09" },
+            { text: "I'd wait forever", time: "00:11" },
+            { text: "if I'm with you", time: "00:18" },
+            { text: "when we are together", time: "00:26" },
+            { text: "across the world,", time: "00:29" },
+            { text: "I'll hold your hand forever", time: "00:30" },
+            { text: "cause I'm with you...", time: "00:38" },
+            { text: "cause I'm with you...", time: "00:45" }
         ];
 
+        function timeToSeconds(timeStr) {
+            const [mm, ss] = timeStr.split(':').map(Number);
+            return (mm * 60) + ss;
+        }
+
+        const PARSED_LYRICS = LYRIC_DATA.map(item => ({
+            text: item.text,
+            time: timeToSeconds(item.time)
+        }));
+
         const GALLERY_DATA = [
-             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_1_2026-02-12_20-54-56.jpg", caption: "Remember the swan boat? " },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_1_2026-02-12_20-54-56.jpg", caption: "Remember the swan boat? " },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_2_2026-02-12_20-54-56.jpg", caption: "Or when we took our best pics at the museum..." },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_3_2026-02-12_20-54-56.jpg", caption: "Remember when we recreated that moment at the aquarium" },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_4_2026-02-12_20-54-56.jpg", caption: "HAHA our first sexy couple pic" },
@@ -865,63 +906,52 @@
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_7_2026-02-12_20-54-56.jpg", caption: "that same night when i got so sick" },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_8_2026-02-12_20-54-56.jpg", caption: "The strangest airbnb but we still found love in eachother" },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_9_2026-02-12_20-54-56.jpg", caption: "you looked so good we had to keep it so quiet " },
-                { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_10_2026-02-12_20-54-56.jpg", caption: "We look like cute cute parents" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_11_2026-02-12_20-54-56.jpg", caption: "even better in this photo." },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_12_2026-02-12_20-54-56.jpg", caption: "i miss your kiss do you miss mine" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_13_2026-02-12_20-54-56.jpg", caption: "remember this place" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_14_2026-02-12_20-54-56.jpg", caption: ":)" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_15_2026-02-12_20-54-56.jpg", caption: "our little date when we dressed nice" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_16_2026-02-12_20-54-56.jpg", caption: "your first snow" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_17_2026-02-12_20-54-56.jpg", caption: "you brought me the food i always dreamed of" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_18_2026-02-12_20-54-56.jpg", caption: "does it get cuter than us?" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_19_2026-02-12_20-54-56.jpg", caption: "the train with me.." },
-
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_20_2026-02-12_20-54-56.jpg", caption: "kissing on that same train" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_21_2026-02-12_20-54-56.jpg", caption: "dorchester" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_22_2026-02-12_20-54-56.jpg", caption: "we had so much fun here" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_23_2026-02-12_20-54-56.jpg", caption: "i think you looked cutest" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_24_2026-02-12_20-54-56.jpg", caption: "HAHA" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_25_2026-02-12_20-54-56.jpg", caption: "when you would take photos as i slept" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_26_2026-02-12_20-54-56.jpg", caption: "party rock :) u took my moms car" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_27_2026-02-12_20-54-56.jpg", caption: "" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_28_2026-02-12_20-54-56.jpg", caption: "our picnic" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_29_2026-02-12_20-54-56.jpg", caption: "our pizza" },
-
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_30_2026-02-12_20-54-56.jpg", caption: "" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_31_2026-02-12_20-54-56.jpg", caption: "our piercings" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_32_2026-02-12_20-54-56.jpg", caption: "and when you left" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_33_2026-02-12_20-54-56.jpg", caption: "" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_34_2026-02-12_20-54-56.jpg", caption: "" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_35_2026-02-12_20-54-56.jpg", caption: "When we first met in cali" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_36_2026-02-12_20-54-56.jpg", caption: "Then we spent time in santa monica" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_37_2026-02-12_20-54-56.jpg", caption: "You took me to universal" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_38_2026-02-12_20-54-56.jpg", caption: "My photo at the famous fountain" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_39_2026-02-12_20-54-56.jpg", caption: "then i visited your school" },
-
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_40_2026-02-12_20-54-56.jpg", caption: "we made legos of eachother" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_41_2026-02-12_20-54-56.jpg", caption: "then we went to our first concert together" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_42_2026-02-12_20-54-56.jpg", caption: "we took our pics in your car" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_43_2026-02-12_20-54-56.jpg", caption: "we got dressed just for a soda" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_44_2026-02-12_20-54-56.jpg", caption: "more pics" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_45_2026-02-12_20-54-56.jpg", caption: "then we made a pizza again" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_46_2026-02-12_20-54-56.jpg", caption: "and you and nicole wore these wigs looking for an after party" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_47_2026-02-12_20-54-56.jpg", caption: "you tried on your dress" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_48_2026-02-12_20-54-56.jpg", caption: "showed me the classic supreme store AND I GOT A FIGURINE" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_49_2026-02-12_20-54-56.jpg", caption: "THEN IT WAS MY BIRTHDAY" },
-
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_50_2026-02-12_20-54-56.jpg", caption: "WE DRESSED AS PIRATES FOR MY BIRTHDAY????" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_51_2026-02-12_20-54-56.jpg", caption: "then it was halloween, you looked so cute for halloween." },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_52_2026-02-12_20-54-56.jpg", caption: "we went to a silent film" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_53_2026-02-12_20-54-56.jpg", caption: "then met hello kitty" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_54_2026-02-12_20-54-56.jpg", caption: "boom, just like that.. it was your birthday" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_55_2026-02-12_20-54-56.jpg", caption: "then we went to an art museum" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_56_2026-02-12_20-54-56.jpg", caption: "damn i love this photo" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_57_2026-02-12_20-54-56.jpg", caption: "and you took me to simi valley then we walked around calabasas commons" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_58_2026-02-12_20-54-56.jpg", caption: "then we hiked up hollywood hills" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_59_2026-02-12_20-54-56.jpg", caption: "do you remember this ferris wheel we were so scared" },
-
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_60_2026-02-12_20-54-56.jpg", caption: "at malibu you took me to the secret your mom showed you" },
-    { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_61_2026-02-12_20-54-56.jpg", caption: "you at hollywood" }
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_10_2026-02-12_20-54-56.jpg", caption: "We look like cute cute parents" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_11_2026-02-12_20-54-56.jpg", caption: "even better in this photo." },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_12_2026-02-12_20-54-56.jpg", caption: "i miss your kiss do you miss mine" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_13_2026-02-12_20-54-56.jpg", caption: "remember this place" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_14_2026-02-12_20-54-56.jpg", caption: ":)" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_15_2026-02-12_20-54-56.jpg", caption: "our little date when we dressed nice" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_16_2026-02-12_20-54-56.jpg", caption: "your first snow" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_17_2026-02-12_20-54-56.jpg", caption: "you brought me the food i always dreamed of" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_18_2026-02-12_20-54-56.jpg", caption: "does it get cuter than us?" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_19_2026-02-12_20-54-56.jpg", caption: "the train with me.." },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_20_2026-02-12_20-54-56.jpg", caption: "kissing on that same train" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_21_2026-02-12_20-54-56.jpg", caption: "dorchester" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_22_2026-02-12_20-54-56.jpg", caption: "we had so much fun here" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_23_2026-02-12_20-54-56.jpg", caption: "i think you looked cutest" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_24_2026-02-12_20-54-56.jpg", caption: "HAHA" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_25_2026-02-12_20-54-56.jpg", caption: "when you would take photos as i slept" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_26_2026-02-12_20-54-56.jpg", caption: "party rock :) u took my moms car" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_28_2026-02-12_20-54-56.jpg", caption: "our picnic" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_29_2026-02-12_20-54-56.jpg", caption: "our pizza" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_31_2026-02-12_20-54-56.jpg", caption: "our piercings" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_32_2026-02-12_20-54-56.jpg", caption: "and when you left" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_35_2026-02-12_20-54-56.jpg", caption: "When we first met in cali" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_36_2026-02-12_20-54-56.jpg", caption: "Then we spent time in santa monica" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_37_2026-02-12_20-54-56.jpg", caption: "You took me to universal" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_38_2026-02-12_20-54-56.jpg", caption: "My photo at the famous fountain" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_39_2026-02-12_20-54-56.jpg", caption: "then i visited your school" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_40_2026-02-12_20-54-56.jpg", caption: "we made legos of eachother" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_41_2026-02-12_20-54-56.jpg", caption: "then we went to our first concert together" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_42_2026-02-12_20-54-56.jpg", caption: "we took our pics in your car" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_43_2026-02-12_20-54-56.jpg", caption: "we got dressed just for a soda" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_45_2026-02-12_20-54-56.jpg", caption: "then we made a pizza again" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_46_2026-02-12_20-54-56.jpg", caption: "and you and nicole wore these wigs looking for an after party" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_47_2026-02-12_20-54-56.jpg", caption: "you tried on your dress" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_48_2026-02-12_20-54-56.jpg", caption: "showed me the classic supreme store AND I GOT A FIGURINE" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_49_2026-02-12_20-54-56.jpg", caption: "THEN IT WAS MY BIRTHDAY" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_50_2026-02-12_20-54-56.jpg", caption: "WE DRESSED AS PIRATES FOR MY BIRTHDAY????" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_51_2026-02-12_20-54-56.jpg", caption: "then it was halloween, you looked so cute for halloween." },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_52_2026-02-12_20-54-56.jpg", caption: "we went to a silent film" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_53_2026-02-12_20-54-56.jpg", caption: "then met hello kitty" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_54_2026-02-12_20-54-56.jpg", caption: "boom, just like that.. it was your birthday" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_55_2026-02-12_20-54-56.jpg", caption: "then we went to an art museum" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_57_2026-02-12_20-54-56.jpg", caption: "and you took me to simi valley then we walked around calabasas commons" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_58_2026-02-12_20-54-56.jpg", caption: "then we hiked up hollywood hills" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_59_2026-02-12_20-54-56.jpg", caption: "do you remember this ferris wheel we were so scared" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_60_2026-02-12_20-54-56.jpg", caption: "at malibu you took me to the secret your mom showed you" },
+            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_61_2026-02-12_20-54-56.jpg", caption: "you at hollywood" }
         ];
 
         const CLOUD_ASSETS = [
@@ -933,7 +963,6 @@
         const mapsTrigger = document.getElementById('maps-trigger');
         const mapsOverlay = document.getElementById('maps-overlay');
         const closeMaps = document.getElementById('close-maps');
-        
         const statusTrigger = document.getElementById('flight-status-trigger');
         const statusOverlay = document.getElementById('status-overlay');
         const closeStatus = document.getElementById('close-status');
@@ -941,15 +970,16 @@
         const quotesContainer = document.getElementById('status-quotes-container');
         const dashedPath = document.getElementById('dashed-path');
         const statusSvg = document.getElementById('status-svg');
-
         const bookTrigger = document.getElementById('book-flight-trigger');
         const bookOverlay = document.getElementById('book-overlay');
         const closeBook = document.getElementById('close-book');
-
         const checkInTrigger = document.getElementById('check-in-trigger');
         const checkInOverlay = document.getElementById('check-in-overlay');
         const closeCheckIn = document.getElementById('close-check-in');
         const checkInIframe = document.getElementById('check-in-iframe');
+
+        let currentAudio = null;
+        let activeIndex = -1;
 
         function spawnClouds(container, count) {
             container.innerHTML = ''; 
@@ -972,8 +1002,38 @@
             }
         }
 
+        function handleAudioSync() {
+            if (!currentAudio) return;
+            const currentTime = currentAudio.currentTime;
+            
+            const spans = document.querySelectorAll('.quote-main span');
+            if (spans.length === 0) return;
+
+            let newIndex = -1;
+            
+            for (let i = 0; i < PARSED_LYRICS.length; i++) {
+                if (currentTime >= PARSED_LYRICS[i].time) {
+                    newIndex = i;
+                } else {
+                    break;
+                }
+            }
+
+            if (newIndex !== -1 && newIndex !== activeIndex) {
+                activeIndex = newIndex;
+                spans.forEach((s, i) => {
+                    s.classList.toggle('playing', i === activeIndex);
+                    if (i === activeIndex) {
+                        s.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
+        }
+
         function refreshPath() {
             const blocks = Array.from(quotesContainer.querySelectorAll('.quote-main span'));
+            if(blocks.length === 0) return;
+
             const containerRect = statusScroller.getBoundingClientRect();
             statusSvg.style.height = statusScroller.scrollHeight + 'px';
             let pathD = "";
@@ -995,15 +1055,14 @@
 
         function initFlightStatus() {
             quotesContainer.innerHTML = '';
-            // Using FLIGHT_TEXT instead of LYRIC_DATA
-            FLIGHT_TEXT.forEach((text, i) => {
+            PARSED_LYRICS.forEach((item, i) => {
                 const block = document.createElement('div');
                 block.className = 'quote-block';
                 const isLeft = i % 2 === 0;
                 block.style.alignItems = isLeft ? 'flex-start' : 'flex-end';
                 block.innerHTML = `
                     <div class="quote-main" style="margin-${isLeft?'left':'right'}: 10px">
-                        <span>${text}</span>
+                        <span data-text="${item.text}">${item.text}</span>
                     </div>`;
                 quotesContainer.appendChild(block);
             });
@@ -1013,10 +1072,39 @@
         statusTrigger.addEventListener('click', () => {
             initFlightStatus();
             statusOverlay.classList.add('active');
-            // Audio logic removed
+
+            if (!currentAudio) {
+                currentAudio = new Audio(AUDIO_SRC);
+                currentAudio.preload = "auto";
+                
+                currentAudio.addEventListener('error', function(e) {
+                    console.error("Error loading audio:", e);
+                    alert("audio path incorrect");
+                });
+
+                currentAudio.addEventListener('timeupdate', handleAudioSync);
+            }
+
+            currentAudio.currentTime = 0;
+            currentAudio.load(); 
+            
+            const playPromise = currentAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    console.log("Audio playing");
+                })
+                .catch(error => {
+                    console.log("Playback failed:", error);
+                });
+            }
+
+            activeIndex = -1;
         });
 
         closeStatus.addEventListener('click', () => {
+            if (currentAudio) {
+                currentAudio.pause();
+            }
             statusOverlay.classList.remove('active');
         });
 
@@ -1034,12 +1122,12 @@
         });
 
         closeMaps.addEventListener('click', () => mapsOverlay.classList.remove('active'));
-
         bookTrigger.addEventListener('click', () => bookOverlay.classList.add('active'));
         closeBook.addEventListener('click', () => bookOverlay.classList.remove('active'));
 
         checkInTrigger.addEventListener('click', () => {
             checkInOverlay.classList.add('active');
+            if (currentAudio) { currentAudio.pause(); }
         });
 
         closeCheckIn.addEventListener('click', () => {
