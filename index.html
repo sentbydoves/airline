@@ -538,38 +538,9 @@
             font-size: 26px; 
             font-weight: 700; 
             line-height: 1.3; 
-            transition: opacity 0.8s ease;
-            opacity: 1;
+            opacity: 1; /* Changed from opacity transition to always visible */
             color: white;
             z-index: 1;
-        }
-
-        .quote-main span.sync-mode {
-            opacity: 0.2;
-        }
-
-        .quote-main span.playing {
-            opacity: 1;
-        }
-
-        .quote-main span.playing::after {
-            content: attr(data-text); 
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            color: transparent; 
-            text-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8);
-            filter: url(#noiseFilter);
-            animation: breathing-glow 2s infinite ease-in-out;
-            pointer-events: none;
-        }
-
-        @keyframes breathing-glow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
         }
 
         #book-overlay {
@@ -732,12 +703,6 @@
     </style>
 </head>
 <body oncontextmenu="return false;">
-<svg style="position: absolute; width: 0; height: 0;">
-  <filter id="noiseFilter" x="-50%" y="-50%" width="200%" height="200%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="4" stitchTiles="stitch" />
-    <feDisplacementMap in="SourceGraphic" scale="5" />
-  </filter>
-</svg>
     <div class="app-container">
         <header>
             <div class="header-bg"></div>
@@ -869,6 +834,7 @@
 <div class="video-wrapper">
    <div style="height: 0px; overflow: hidden; padding-top: 56.25%; position: relative; width: 100%;">
         <iframe
+            id="check-in-iframe"
             style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;"
             src="https://tube.rvere.com/embed?v=b32xgIy8tMU&fs=0"
             title="YouTube video player"
@@ -879,21 +845,18 @@
     </div>
 
     <script>
-        const AUDIO_SRC = "your_audio_file.mp3"; 
-
-        const LYRIC_DATA = [
-            { text: "16,000 miles,", time: 0.5 },
-            { text: "just to see eachother", time: 3.2 },
-            { text: "every moment special", time: 6.8 },
-            { text: "when we are together", time: 9.5 },
-            { text: "azcross the world", time: 13.0 },
-            { text: "i hold your hand", time: 16.2 },
-            { text: "no distance is too far", time: 19.5 },
-            { text: "if it means being with you in the end", time: 23.0 }
+        const FLIGHT_TEXT = [
+            "16,000 miles,",
+            "just to see you smile",
+            "id wait forever",
+            "if im with you.",
+            "when we are together",
+            "across the world",
+            "ill hold your hand forever",
         ];
 
         const GALLERY_DATA = [
-            { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_1_2026-02-12_20-54-56.jpg", caption: "Remember the swan boat? " },
+             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_1_2026-02-12_20-54-56.jpg", caption: "Remember the swan boat? " },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_2_2026-02-12_20-54-56.jpg", caption: "Or when we took our best pics at the museum..." },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_3_2026-02-12_20-54-56.jpg", caption: "Remember when we recreated that moment at the aquarium" },
             { url: "https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/photo_4_2026-02-12_20-54-56.jpg", caption: "HAHA our first sexy couple pic" },
@@ -988,10 +951,6 @@
         const closeCheckIn = document.getElementById('close-check-in');
         const checkInIframe = document.getElementById('check-in-iframe');
 
-        let currentAudio = null;
-        let activeIndex = -1;
-        let hasPlayedSequence = false;
-
         function spawnClouds(container, count) {
             container.innerHTML = ''; 
             for (let i = 0; i < count; i++) {
@@ -1010,27 +969,6 @@
                 img.style.animation = `drift ${duration}s linear infinite`;
                 img.style.animationDelay = `${delay}s`;
                 container.appendChild(img);
-            }
-        }
-
-        function handleAudioSync() {
-            if (!currentAudio) return;
-            const currentTime = currentAudio.currentTime;
-            const spans = document.querySelectorAll('.quote-main span');
-            let newIndex = -1;
-            for (let i = 0; i < LYRIC_DATA.length; i++) {
-                if (currentTime >= LYRIC_DATA[i].time) newIndex = i;
-                else break;
-            }
-            if (newIndex !== -1 && newIndex !== activeIndex) {
-                activeIndex = newIndex;
-                spans.forEach((s, i) => {
-                    s.classList.remove('playing');
-                    if (i === activeIndex) {
-                        s.classList.add('playing');
-                        s.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                });
             }
         }
 
@@ -1057,14 +995,15 @@
 
         function initFlightStatus() {
             quotesContainer.innerHTML = '';
-            LYRIC_DATA.forEach((item, i) => {
+            // Using FLIGHT_TEXT instead of LYRIC_DATA
+            FLIGHT_TEXT.forEach((text, i) => {
                 const block = document.createElement('div');
                 block.className = 'quote-block';
                 const isLeft = i % 2 === 0;
                 block.style.alignItems = isLeft ? 'flex-start' : 'flex-end';
                 block.innerHTML = `
                     <div class="quote-main" style="margin-${isLeft?'left':'right'}: 10px">
-                        <span data-text="${item.text}">${item.text}</span>
+                        <span>${text}</span>
                     </div>`;
                 quotesContainer.appendChild(block);
             });
@@ -1074,21 +1013,10 @@
         statusTrigger.addEventListener('click', () => {
             initFlightStatus();
             statusOverlay.classList.add('active');
-            const spans = document.querySelectorAll('.quote-main span');
-            if (!hasPlayedSequence) spans.forEach(s => s.classList.add('sync-mode'));
-            if (currentAudio) currentAudio.pause();
-            currentAudio = new Audio(AUDIO_SRC);
-            activeIndex = -1;
-            currentAudio.addEventListener('timeupdate', handleAudioSync);
-            currentAudio.play().catch(e => console.log("Audio blocked"));
-            currentAudio.onended = () => {
-                spans.forEach(s => s.classList.remove('playing', 'sync-mode'));
-                hasPlayedSequence = true;
-            };
+            // Audio logic removed
         });
 
         closeStatus.addEventListener('click', () => {
-            if (currentAudio) { currentAudio.pause(); currentAudio.src = ""; }
             statusOverlay.classList.remove('active');
         });
 
@@ -1112,7 +1040,6 @@
 
         checkInTrigger.addEventListener('click', () => {
             checkInOverlay.classList.add('active');
-            if (currentAudio) { currentAudio.pause(); }
         });
 
         closeCheckIn.addEventListener('click', () => {
