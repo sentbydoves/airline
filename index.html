@@ -18,6 +18,9 @@
             --tile-light-blue: #64A6E3;
             --tile-vivid-blue: #003695;
             --sky-blue: #3E72A2;
+            --airmail-blue: #1b3a7d;
+            --airmail-red: #b22222;
+            --paper-base: #e3ecff;
         }
 
         * {
@@ -223,11 +226,6 @@
             transform: translateY(60px); 
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(1deg); }
-        }
-
         .status-bar {
             background-color: var(--united-gold);
             padding: 18px 20px;
@@ -324,8 +322,7 @@
             width: 100vw;
             height: 100dvh;
             z-index: 9999;
-            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/picnic.jpg') center center;
-            background-size: cover; 
+            background: black; 
             display: none; 
             overflow: hidden;
         }
@@ -348,9 +345,10 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            opacity: 0.15;
+            opacity: .25;
             pointer-events: none;
             background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/noise.jpg');
+            background-attachment: local;
         }
 
         .maps-scroll-area {
@@ -366,67 +364,84 @@
             align-items: center;
             scrollbar-width: none; 
             -ms-overflow-style: none;
+            background: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/picnic.jpg');
+            background-size: contain;
+            background-position: repeat-y;
+            background-attachment: local; 
         }
         .maps-scroll-area::-webkit-scrollbar { display: none; }
 
         .polaroid {
             position: relative;
-            background-color: white;
-            padding: 15px 15px 60px 15px; 
-            width: 300px; 
-            height: auto; 
+            background-color: #c7c7c7;
+            width: fit-content; 
+            max-width: 60vw;
             margin-bottom: 50px; 
             display: flex;
             flex-direction: column;
+            padding: 10px 10px 0 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .polaroid img {
-            width: 100%; 
-            height: auto; 
             display: block;
-            background-color: #f8f8f8;
+            width: auto;
+            height: auto;
+            max-width: 100%; 
+            max-height: 70vh;
         }
 
         .polaroid-caption {
-            position: absolute;
-            bottom: 0;
-            left: 15px; 
-            right: 15px; 
-            height: 60px; 
+            position: relative;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
             font-family: "Patrick Hand", cursive;
             color: #030303; 
-            font-size: 24px;
-            line-height: 1.1;
+            font-size: 18px;
+            z-index: 1;
         }
 
-        .back-btn {
+        .polaroid-caption::after {
+            content: "";
             position: absolute;
-            top: calc(20px + env(safe-area-inset-top));
-            left: 20px;
-            z-index: 10002;
-            cursor: pointer;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(5px);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.3);
-            pointer-events: auto; 
+            top: 0;
+            left: -15px;
+            right: -15px;
+            bottom: 0;
+            z-index: -1; 
+            background-image: url('https://cdn.discordapp.com/attachments/1186153823681658934/1466921097021755402/a.png?ex=697e803b&is=697d2ebb&hm=5cfc444496e77f531a93da9bbbf27363cea8d3132155511653519d6c95e97adb&');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            mix-blend-mode: multiply; 
+            opacity: 0.9;
         }
-        
-        .back-btn svg {
-            width: 24px;
-            height: 24px;
-            stroke: #fff;
-            stroke-width: 2.5;
-        }
+
+.back-btn {
+    position: absolute;
+    top: calc(20px + env(safe-area-inset-top));
+    left: 20px;
+    z-index: 10002;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    pointer-events: auto; 
+}
+
+.back-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: #fff;
+    stroke-width: 2.5;
+}
 
         #status-overlay {
             position: fixed;
@@ -516,25 +531,178 @@
             z-index: 1;
         }
 
-        .quote-main { 
+        .quote-main span {
+            position: relative;
+            display: inline-block;
+            padding: 5px 10px;
             font-size: 26px; 
             font-weight: 700; 
             line-height: 1.3; 
-            display: block; 
-            text-align: left; 
-            max-width: 100%; 
-            margin: 0;
+            transition: opacity 0.8s ease;
+            opacity: 1;
+            color: white;
+            z-index: 1;
         }
 
-        .quote-main span {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 4px;
+        .quote-main span.sync-mode {
+            opacity: 0.2;
+        }
+
+        .quote-main span.playing {
+            opacity: 1;
+        }
+
+        .quote-main span.playing::after {
+            content: attr(data-text); 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            color: transparent; 
+            text-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8);
+            filter: url(#noiseFilter);
+            animation: breathing-glow 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes breathing-glow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        #book-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100dvh;
+            z-index: 10005;
+            background-color: var(--paper-base);
+            display: none;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #book-overlay.active { display: block; }
+
+        .letter-vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 55; pointer-events: none;
+            background: radial-gradient(circle, transparent 35%, rgba(0, 0, 0, 0.418) 100%);
+        }
+
+        .gobo-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 40; pointer-events: none; overflow: hidden;
+        }
+
+        .gobo {
+            position: absolute; top: -15%; left: -15%; width: 130%; height: 130%;
+            background-image: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/gobo.jpg');
+            background-size: cover; background-position: center;
+            mix-blend-mode: soft-light; 
+        }
+
+        .gobo-1 { opacity: .12; animation: windFast 4s ease-in-out infinite alternate; }
+        .gobo-2 { opacity: .13; transform: rotate(90deg) scale(1.1); animation: windFast 2s ease-in-out infinite alternate-reverse; }
+
+        @keyframes windFast {
+            0% { transform: translate(0, 0) scale(1.1); }
+            100% { transform: translate(15px, 15px) scale(1.12); }
+        }
+
+        .paper-texture {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 30; pointer-events: none;
+            mix-blend-mode: multiply; opacity: .8;
+            background-image: url('https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/images/paper.jpg');
+            background-size: cover;
+        }
+
+        .envelope-wrapper {
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            padding: 10px; position: relative; z-index: 10;
+        }
+
+        .letter-body {
+            width: 100%; height: 96%; max-width: 480px;
+            background: #fdfdfa; position: relative;
+            padding: 40px 25px; display: flex; flex-direction: column;
+            border: 12px solid transparent;
+            border-image: repeating-linear-gradient(
+                -45deg,
+                var(--airmail-red) 0, var(--airmail-red) 15px,
+                #fff 15px, #fff 30px,
+                var(--airmail-blue) 30px, var(--airmail-blue) 45px,
+                #fff 45px, #fff 60px
+            ) 15;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.2);
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .header-question { 
+            color: var(--airmail-red); 
+            font-size: 24px; 
+            font-weight: 900; 
+            text-transform: none; 
+            margin-bottom: 25px;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+
+        #my-form { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
+
+        label { font-size: 11px; color: #444; text-transform: uppercase; display: block; margin-bottom: 5px; font-weight: bold;}
+
+        input, textarea {
+            background: transparent; border: none;
+            border-bottom: 1px solid rgba(0,0,0,0.15);
+            font-family: 'Courier New', Courier, monospace; font-size: 18px;
+            padding: 10px 0; color: #1b3a7d; outline: none; width: 100%;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        textarea {
+            flex-grow: 1; line-height: 32px;
+            background-image: linear-gradient(transparent 31px, rgba(0,0,0,0.06) 32px);
+            background-size: 100% 32px; resize: none;
+        }
+
+        #status {
+            text-align: center; font-size: 16px; margin-top: 10px;
+            color: var(--airmail-blue);
+        }
+
+        .post-button {
+            background: transparent; border: 2px solid var(--airmail-blue);
+            color: var(--airmail-blue); padding: 15px;
+            font-family: 'Courier New', Courier, monospace; font-size: 18px;
+            cursor: pointer; text-transform: uppercase; margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .post-button:active { background: var(--airmail-blue); color: white; transform: scale(0.98); }
+
+        .letter-footer {
+            margin-top: 20px; text-align: center; border-top: 1px solid var(--airmail-blue);
+            padding-top: 10px; color: var(--airmail-blue); font-size: 12px;
+            letter-spacing: 4px; font-weight: bold; opacity: 0.8;
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
-
+<svg style="position: absolute; width: 0; height: 0;">
+  <filter id="noiseFilter" x="-50%" y="-50%" width="200%" height="200%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="4" stitchTiles="stitch" />
+    <feDisplacementMap in="SourceGraphic" scale="5" />
+  </filter>
+</svg>
     <div class="app-container">
         <header>
             <div class="header-bg"></div>
@@ -570,7 +738,7 @@
                     <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/clock.svg" alt="Flight Status">
                     <span>Flight status</span>
                 </div>
-                <div class="grid-item book-flight" style="flex: 6;">
+                <div class="grid-item book-flight" id="book-flight-trigger" style="flex: 6;">
                     <div class="icon-circle">
                         <img src="https://raw.githubusercontent.com/sentbydoves/airline/refs/heads/main/svg/plane.svg" class="book-flight-icon" alt="Book a flight">
                     </div>
@@ -621,20 +789,58 @@
         </div>
     </div>
 
+    <div id="book-overlay">
+        <div class="letter-vignette"></div>
+        <div class="gobo-container">
+            <div class="gobo gobo-1"></div>
+            <div class="gobo gobo-2"></div>
+        </div>
+        <div class="paper-texture"></div>
+
+<div class="back-btn" id="close-book">
+    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+</div>
+        <div class="envelope-wrapper">
+            <div class="letter-body">
+                <div class="header-question">If we could go anywhere, Where?</div>
+                <form id="my-form" action="https://formspree.io/f/xzdgowpb" method="POST">
+                    <div>
+                        <label>From:</label>
+                        <input type="email" name="email" required placeholder="your email...">
+                    </div>
+
+                    <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <label>Correspondence:</label>
+                        <textarea name="message" required placeholder="Type here.. Tell me something, Maybe future travel plans? Something youve been wanting to tell me"></textarea>
+                    </div>
+
+                    <button class="post-button" id="my-form-button">Post Letter</button>
+                    <p id="status"></p>
+                </form>
+
+                <div class="letter-footer">PAR AVION • VIA AIR MAIL</div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const QUOTES_DATA = [
-            "Over 16,000 miles flown,",
-            "just to be with you",
-            "every moment special",
-            "when we are together",
-            "across the world",
-            "to hold your hand",
-            "no distance is too far",
-            "if it means being with you in the end"
+        const AUDIO_SRC = "your_audio_file.mp3"; 
+
+        const LYRIC_DATA = [
+            { text: "Over 16,000 miles,", time: 0.5 },
+            { text: "just to see eachother", time: 3.2 },
+            { text: "every moment special", time: 6.8 },
+            { text: "when we are together", time: 9.5 },
+            { text: "across the world", time: 13.0 },
+            { text: "to hold your hand", time: 16.2 },
+            { text: "no distance is too far", time: 19.5 },
+            { text: "if it means being with you in the end", time: 23.0 }
         ];
 
         const GALLERY_DATA = [
-            { url: "https://picsum.photos/seed/pic2/1000/800", caption: "Salem 2023" },
+            { url: "https://picsum.photos/seed/pic2/400/1000", caption: "Salem 2023" },
             { url: "https://picsum.photos/seed/pic1/1000/800", caption: "Adventures" },
             { url: "https://picsum.photos/seed/pic3/1000/800", caption: "Flying High" },
         ];
@@ -648,6 +854,7 @@
         const mapsTrigger = document.getElementById('maps-trigger');
         const mapsOverlay = document.getElementById('maps-overlay');
         const closeMaps = document.getElementById('close-maps');
+        
         const statusTrigger = document.getElementById('flight-status-trigger');
         const statusOverlay = document.getElementById('status-overlay');
         const closeStatus = document.getElementById('close-status');
@@ -656,134 +863,170 @@
         const dashedPath = document.getElementById('dashed-path');
         const statusSvg = document.getElementById('status-svg');
 
+        const bookTrigger = document.getElementById('book-flight-trigger');
+        const bookOverlay = document.getElementById('book-overlay');
+        const closeBook = document.getElementById('close-book');
+
+        let currentAudio = null;
+        let activeIndex = -1;
+        let hasPlayedSequence = false;
+
         function spawnClouds(container, count) {
             container.innerHTML = ''; 
             for (let i = 0; i < count; i++) {
                 const img = document.createElement('img');
                 img.src = CLOUD_ASSETS[i % CLOUD_ASSETS.length];
                 img.classList.add('cloud');
-                
                 const depth = Math.random() * 0.9 + 0.1; 
                 const duration = 500 - (depth * 250); 
-                
                 const width = 300 + (depth * 400); 
                 const opacity = 0.4 + (depth * 0.4); 
                 const top = Math.random() * 60; 
                 const delay = Math.random() * -duration; 
-
                 img.style.width = `${width}px`;
                 img.style.top = `${top}%`;
                 img.style.opacity = opacity;
-                img.style.transform = 'translate3d(0,0,0)';
                 img.style.animation = `drift ${duration}s linear infinite`;
                 img.style.animationDelay = `${delay}s`;
-                
                 container.appendChild(img);
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            spawnClouds(document.getElementById('hero-cloud-container'), 20);
-        });
+        function handleAudioSync() {
+            if (!currentAudio) return;
+            const currentTime = currentAudio.currentTime;
+            const spans = document.querySelectorAll('.quote-main span');
+            let newIndex = -1;
+            for (let i = 0; i < LYRIC_DATA.length; i++) {
+                if (currentTime >= LYRIC_DATA[i].time) newIndex = i;
+                else break;
+            }
+            if (newIndex !== -1 && newIndex !== activeIndex) {
+                activeIndex = newIndex;
+                spans.forEach((s, i) => {
+                    s.classList.remove('playing');
+                    if (i === activeIndex) {
+                        s.classList.add('playing');
+                        s.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
+        }
 
-        function generatePolaroids() {
-            const feed = document.getElementById('polaroid-feed');
-            feed.innerHTML = ''; 
-            GALLERY_DATA.forEach((data, index) => {
-                const polaroid = document.createElement('div');
-                polaroid.classList.add('polaroid');
-                const rot = Math.random() * 6 - 3;
-                polaroid.style.transform = `rotate(${rot}deg)`;
-                
-                polaroid.innerHTML = `
-                    <img src="${data.url}" loading="lazy">
-                    <div class="polaroid-caption">${data.caption}</div>
-                `;
-                feed.appendChild(polaroid);
-            });
+        function refreshPath() {
+            const blocks = Array.from(quotesContainer.querySelectorAll('.quote-main span'));
+            const containerRect = statusScroller.getBoundingClientRect();
+            statusSvg.style.height = statusScroller.scrollHeight + 'px';
+            let pathD = "";
+            for (let i = 0; i < blocks.length - 1; i += 2) {
+                const startRect = blocks[i].getBoundingClientRect();
+                const endRect = blocks[i+1].getBoundingClientRect();
+                const startX = startRect.right - containerRect.left + 8;
+                const startY = startRect.top - containerRect.top + statusScroller.scrollTop + (startRect.height / 2);
+                const endX = endRect.left - containerRect.left - 8;
+                const endY = endRect.top - containerRect.top + statusScroller.scrollTop + (endRect.height / 2);
+                pathD += `M ${startX} ${startY} `;
+                const distY = endY - startY;
+                const swingX = 100 + Math.random() * 20; 
+                const tension = 0.1 + Math.random() * 1.4; 
+                pathD += `C ${startX + swingX} ${startY + (distY * tension)}, ${endX - swingX} ${endY - (distY * tension)}, ${endX} ${endY} `;
+            }
+            dashedPath.setAttribute('d', pathD);
         }
 
         function initFlightStatus() {
             quotesContainer.innerHTML = '';
-            
-            QUOTES_DATA.forEach((text, i) => {
+            LYRIC_DATA.forEach((item, i) => {
                 const block = document.createElement('div');
                 block.className = 'quote-block';
                 const isLeft = i % 2 === 0;
                 block.style.alignItems = isLeft ? 'flex-start' : 'flex-end';
-                block.style.textAlign = 'left'; 
-                
-                block.innerHTML = `<div class="quote-main" style="margin-${isLeft?'left':'right'}: 10px"><span>${text}</span></div>`;
+                block.innerHTML = `
+                    <div class="quote-main" style="margin-${isLeft?'left':'right'}: 10px">
+                        <span data-text="${item.text}">${item.text}</span>
+                    </div>`;
                 quotesContainer.appendChild(block);
             });
-
-            setTimeout(() => {
-                const blocks = Array.from(quotesContainer.querySelectorAll('.quote-main span'));
-                const containerRect = statusScroller.getBoundingClientRect();
-                const totalHeight = statusScroller.scrollHeight;
-                
-                statusSvg.style.height = totalHeight + 'px';
-
-                let pathD = "";
-
-                for (let i = 0; i < blocks.length - 1; i += 2) {
-                    const startEl = blocks[i];     
-                    const endEl = blocks[i+1];     
-
-                    const startRect = startEl.getBoundingClientRect();
-                    const endRect = endEl.getBoundingClientRect();
-
-                    const startX = startRect.right - containerRect.left + 8;
-                    const startY = startRect.top - containerRect.top + statusScroller.scrollTop + (startRect.height / 2);
-
-                    const endX = endRect.left - containerRect.left - 8;
-                    const endY = endRect.top - containerRect.top + statusScroller.scrollTop + (endRect.height / 2);
-
-                    pathD += `M ${startX} ${startY} `;
-
-                    const distY = endY - startY;
-                    const swingX = 100 + Math.random() * 20; 
-                    const tension = 0.1 + Math.random() * 1.4; 
-
-                    const cp1X = startX + swingX; 
-                    const cp1Y = startY + (distY * tension);
-                    const cp2X = endX - swingX;
-                    const cp2Y = endY - (distY * tension);
-
-                    pathD += `C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY} `;
-                }
-
-                dashedPath.setAttribute('d', pathD);
-            }, 50);
+            setTimeout(refreshPath, 50);
         }
 
+        statusTrigger.addEventListener('click', () => {
+            initFlightStatus();
+            statusOverlay.classList.add('active');
+            const spans = document.querySelectorAll('.quote-main span');
+            if (!hasPlayedSequence) spans.forEach(s => s.classList.add('sync-mode'));
+            if (currentAudio) currentAudio.pause();
+            currentAudio = new Audio(AUDIO_SRC);
+            activeIndex = -1;
+            currentAudio.addEventListener('timeupdate', handleAudioSync);
+            currentAudio.play().catch(e => console.log("Audio blocked"));
+            currentAudio.onended = () => {
+                spans.forEach(s => s.classList.remove('playing', 'sync-mode'));
+                hasPlayedSequence = true;
+            };
+        });
+
+        closeStatus.addEventListener('click', () => {
+            if (currentAudio) { currentAudio.pause(); currentAudio.src = ""; }
+            statusOverlay.classList.remove('active');
+        });
+
         mapsTrigger.addEventListener('click', () => {
-            generatePolaroids(); 
+            const feed = document.getElementById('polaroid-feed');
+            feed.innerHTML = ''; 
+            GALLERY_DATA.forEach(data => {
+                const polaroid = document.createElement('div');
+                polaroid.classList.add('polaroid');
+                polaroid.style.transform = `rotate(${Math.random() * 6 - 3}deg)`;
+                polaroid.innerHTML = `<img src="${data.url}" loading="lazy"><div class="polaroid-caption">${data.caption}</div>`;
+                feed.appendChild(polaroid);
+            });
             mapsOverlay.classList.add('active');
         });
 
         closeMaps.addEventListener('click', () => mapsOverlay.classList.remove('active'));
 
-        statusTrigger.addEventListener('click', () => {
-            initFlightStatus();
-            statusOverlay.classList.add('active');
-        });
-
-        closeStatus.addEventListener('click', () => statusOverlay.classList.remove('active'));
+        bookTrigger.addEventListener('click', () => bookOverlay.classList.add('active'));
+        closeBook.addEventListener('click', () => bookOverlay.classList.remove('active'));
 
         statusScroller.addEventListener('scroll', () => {
             dashedPath.style.strokeDashoffset = -statusScroller.scrollTop * 0.5;
         });
 
         window.addEventListener('resize', () => {
-            if(statusOverlay.classList.contains('active')) {
-                initFlightStatus();
-            }
+            if(statusOverlay.classList.contains('active')) refreshPath();
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            spawnClouds(document.getElementById('hero-cloud-container'), 5, 0.5);
+            spawnClouds(document.getElementById('hero-cloud-container'), 15);
         });
+
+        var form = document.getElementById("my-form");
+        async function handleSubmit(event) {
+          event.preventDefault();
+          var status = document.getElementById("status");
+          var button = document.getElementById("my-form-button");
+          var data = new FormData(event.target);
+          button.style.display = "none";
+          status.innerHTML = "Submitting to Airmail...";
+          fetch(event.target.action, {
+            method: form.method,
+            body: data,
+            headers: { 'Accept': 'application/json' }
+          }).then(response => {
+            if (response.ok) {
+              status.innerHTML = "Letter Sent!";
+              form.reset();
+            } else {
+              status.innerHTML = "Error sending.";
+              button.style.display = "block";
+            }
+          }).catch(error => {
+            status.innerHTML = "Connection error.";
+            button.style.display = "block";
+          });
+        }
+        form.addEventListener("submit", handleSubmit);
     </script>
 </body>
 </html>
